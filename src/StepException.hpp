@@ -1,4 +1,7 @@
+#pragma once
+
 #include <exception>
+
 
 class StepException : public std::exception
 {

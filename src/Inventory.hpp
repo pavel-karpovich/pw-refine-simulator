@@ -1,3 +1,5 @@
+#pragma once
+
 #include <exception>
 #include <functional>
 #include <vector>
@@ -11,45 +13,45 @@ class Slot
 {
 private:
     uint item_id = 0;
-    std::stack<Item> items;
+    std::stack<std::shared_ptr<const Item>> items;
 
 public:
-    bool addItem(const Item &item)
+    bool addItem(std::shared_ptr<const Item> item)
     {
         if (this->isEmpty())
         {
-            this->item_id = item.id;
+            this->item_id = item->id;
         }
         if (!this->isFull())
         {
-            this->items.push(item);
+            this->items.push(std::move(item));
             return true;
         }
         return false;
     }
 
-    const std::optional<Item> removeItem()
+    const std::optional<std::shared_ptr<const Item>> removeItem()
     {
         if (this->isEmpty())
         {
             return std::nullopt;
         }
-        Item& item = this->items.top();
+        auto item = this->items.top();
         this->items.pop();
         if (this->isEmpty())
         {
             this->item_id = 0;
         }
-        return std::optional<Item>{item};
+        return std::optional<std::shared_ptr<const Item>>{std::move(item)};
     }
 
-    const std::optional<Item> topItem() const
+    const std::optional<std::shared_ptr<const Item>> topItem() const
     {
         if (this->isEmpty())
         {
             return std::nullopt;
         }
-        return std::optional<Item>{this->items.top()};
+        return std::optional<std::shared_ptr<const Item>>{this->items.top()};
     }
 
     bool isEmpty() const
@@ -63,7 +65,7 @@ public:
         {
             return false;
         }
-        return this->items.size() == this->items.top().max_pile;
+        return this->items.size() == this->items.top()->max_pile;
     }
 
     uint getItemId() const
@@ -78,7 +80,7 @@ public:
             return "Empty";
         }
         std::ostringstream oss;
-        oss << this->topItem().value().toString();
+        oss << this->topItem().value()->toString();
         if (this->items.size() > 1)
         {
             oss << " x" << this->items.size();
@@ -108,7 +110,7 @@ public:
         return non_empty_slots;
     }
 
-    void addItems(std::stack<Item>& items)
+    void addItems(std::stack<std::shared_ptr<const Item>>& items)
     {
         if (items.size() == 0)
         {
@@ -136,11 +138,11 @@ public:
         auto removed_item = this->slots[slot_index].removeItem();
         if (removed_item.has_value())
         {
-            this->spent_gold += removed_item.value().price;
+            this->spent_gold += removed_item.value()->price;
         }
     }
 
-    void removeItem(const Item& item)
+    void removeItem(std::shared_ptr<const Item> item)
     {
         int slot_index = this->findSlot(item);
         if (slot_index == -1)
@@ -150,7 +152,7 @@ public:
         auto removed_item = this->slots[slot_index].removeItem();
         if (removed_item.has_value())
         {
-            this->spent_gold += removed_item.value().price;
+            this->spent_gold += removed_item.value()->price;
         }
     }
 
@@ -168,12 +170,12 @@ private:
     }
 
     // It will search by ref only in top items for each slot
-    int findSlot(const Item& item)
+    int findSlot(std::shared_ptr<const Item> item)
     {
         for (size_t i = 0; i < sizeof(this->slots); ++i)
         {
-            auto topItem = this->slots[i].topItem().value();
-            if (&topItem == &item)
+            auto top_item = this->slots[i].topItem().value();
+            if (top_item == item)
             {
                 return i;
             }
@@ -181,7 +183,7 @@ private:
         return -1;
     }
 
-    int findSlotForItem(const std::stack<Item> &items)
+    int findSlotForItem(std::stack<std::shared_ptr<const Item>>& items)
     {
         int first_free_slot_index = -1;
         for (size_t i = 0; i < sizeof(this->slots); ++i)
@@ -191,7 +193,7 @@ private:
                 first_free_slot_index = i;
             }
             if (
-                this->slots[i].getItemId() == items.top().id &&
+                this->slots[i].getItemId() == items.top()->id &&
                 !this->slots[i].isEmpty() && !this->slots[i].isFull()
             ) {
                 return i;
@@ -200,27 +202,17 @@ private:
         return first_free_slot_index;
     }
 
-    void fillSlot(uint slot_index, std::stack<Item> &items)
+    void fillSlot(uint slot_index, std::stack<std::shared_ptr<const Item>>& items)
     {
-        if (!this->slots[slot_index].isEmpty() && this->slots[slot_index].getItemId() != items.top().id)
+        if (!this->slots[slot_index].isEmpty() && this->slots[slot_index].getItemId() != items.top()->id)
         {
             throw StepException(1, "Internal error: wrong slot @1");
         }
         while (!this->slots[slot_index].isFull() && !items.empty())
         {
-            this->slots[slot_index].addItem(items.top());
+            auto item = items.top();
             items.pop();
+            this->slots[slot_index].addItem(std::move(item));
         }
     }
-};
-
-class InventoryHelper
-{
-    Inventory inventory;
-
-public:
-    InventoryHelper(const Inventory &inventory)
-        : inventory(inventory) {}
-
-
 };

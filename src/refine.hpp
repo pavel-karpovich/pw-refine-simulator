@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstring>
 #include <random>
 #include "Item.hpp"

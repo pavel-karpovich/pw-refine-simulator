@@ -1,5 +1,6 @@
 #include "Simulator.hpp"
 
+
 int main(int argc, char* argv[])
 {
     std::cout << "Start PW Refine simulator" << std::endl
