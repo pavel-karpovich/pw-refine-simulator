@@ -1,0 +1,8 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/paradox/pw-refine-simulator'
+ 
+mkdir -p build/./src/
+g++ -I./src -MMD -MP -lstdc++ -Wall -Werror -Wextra -std=c++17 -c src/main.cpp -o build/./src/main.cpp.o
+g++ ./build/./src/main.cpp.o -o build/exe 
+make: Leaving directory '/home/paradox/pw-refine-simulator'
+ 
