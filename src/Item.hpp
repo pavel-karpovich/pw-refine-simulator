@@ -47,9 +47,9 @@ public:
 	float			fail_ext_succeed_prob[12];	// 在精炼失败不降等级时的成功概率调整 // Корректировка вероятности успеха при неудачной переработке без понижения рейтинга
 
 private:
-    RefineEssence() {}
+    RefineEssence() : Item() {}
 public:
-    RefineEssence(EssenceType type)
+    RefineEssence(EssenceType type) : Item()
     {
         this->price = 1.0;
         this->max_pile = 1000;
@@ -100,7 +100,7 @@ public:
     unsigned int refine_level = 0;
 
 private:
-    EquipementItem() {}
+    EquipementItem() : Item() {}
 public:
     EquipementItem(unsigned int id, std::string name)
         : Item(id, name, 0, 1) {}

@@ -77,8 +77,7 @@ public:
         std::uniform_real_distribution<float> distr(0.0, 1.0);
         float rnd = distr(eng);
         int index = static_cast<int>(std::floor(rnd * sizeof(equipementPool)));
-        Item* item = new EquipementItem(equipementPool[index].id, equipementPool[index].name);
-        return std::make_unique<const Item>(item);
+        return std::make_unique<const EquipementItem>(equipementPool[index].id, equipementPool[index].name);
     }
 
 };
