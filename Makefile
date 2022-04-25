@@ -6,6 +6,7 @@ SRC_DIRS := ./src
 CXXFLAGS += -lstdc++ -Wall -Werror -Wextra -std=c++17
 CC := g++
 
+EIGEN := -I ./lib/eigen-3.4.0/
 
 # Find all the C and C++ files we want to compile
 SRCS := $(shell find $(SRC_DIRS) -name '*.cpp' -or -name '*.c' -or -name '*.s')
@@ -39,6 +40,6 @@ $(BUILD_DIR)/%.c.o: %.c
 # Build step for C++ source
 $(BUILD_DIR)/%.cpp.o: %.cpp
 	mkdir -p $(dir $@)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(EIGEN) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 -include $(DEPS)

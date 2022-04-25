@@ -94,8 +94,6 @@ RefineResult refine(EquipementItem* item, RefineEssence* essence)
     {
         float adj1 = essence->ext_succeed_prob;
         float adj2 = essence->ext_reserved_prob;
-		float adj1 = essence->ext_succeed_prob;
-		float adj2 = essence->ext_reserved_prob;
 
 		if (adj1 < 0) adj1 = 0;
 		if (adj2 < 0) adj2 = 0;
@@ -110,7 +108,7 @@ RefineResult refine(EquipementItem* item, RefineEssence* essence)
 			adjust[1] = 2.0;	// Имеет специальный зарезервированный камень？ //拥有特殊的保留石
 		}
 
-		for (size_t i=0; i < 12; i++)
+		for (size_t i = 0; i < 12; i++)
 		{
 			adjust2[i] = essence->fail_ext_succeed_prob[i];
 		}
