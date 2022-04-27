@@ -10,13 +10,14 @@ int main(int argc, char* argv[])
     //PWEquipementRefineSimulator simulator;
     // simulator.run();
 
+    // uint level = atoi(argv[1]);
+    // uint trials = atoi(argv[2]);
+    // printMarkovChainProbabilities(level, trials);
+
+
+    RefineCostAnalyzer costAnalyzer(10000, 570000);
     uint level = atoi(argv[1]);
-    uint trials = atoi(argv[2]);
-    printMarkovChainProbabilities(level, trials);
-
-
-    // RefineCostAnalyzer costAnalyzer(10000, 570000);
-    // double money = atof(argv[1]);
-    // costAnalyzer.analyzeCost(money, 5);
+    double money = atof(argv[2]);
+    costAnalyzer.analyzeCost(money, level);
     return 0;
 }
