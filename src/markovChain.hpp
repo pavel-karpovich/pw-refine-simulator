@@ -8,7 +8,7 @@
  
 
  using StoneMatrix = Eigen::Matrix<double, 13, 13>;
- using RefineVector = Eigen::Vector<double, 13>;
+ using RefineVector = Eigen::RowVector<double, 13>;
 
 StoneMatrix mirazh_matrix()
 {

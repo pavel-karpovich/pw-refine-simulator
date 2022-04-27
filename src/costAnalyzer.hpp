@@ -48,14 +48,12 @@ public:
         {
             step_option.prob_matrix.row(target_refine) *= 0;
             step_option.prob_matrix(target_refine, target_refine) = 1.0;
-            std::cout << std::endl << "Matrix:" << std::endl << step_option.prob_matrix << std::endl;
         }
-        std::cout << money << std::endl;
-        // const Result* best_result = this->makeStepFurther(money, target_refine, initial_prob_state, 1, "");
-        // std::cout << "Best path to refine +" << target_refine << " is found:" << std::endl;
-        // std::cout << best_result->path << std::endl;
-        // printVector(refine_levels);
-        // std::cout << std::left << std::setw(12) << best_result->prob_vector << std::endl;
+        const Result* best_result = this->makeStepFurther(money, target_refine, initial_prob_state, 1, "");
+        std::cout << "Best path to refine +" << target_refine << " is found:" << std::endl;
+        std::cout << best_result->path << std::endl;
+        printVector(refine_levels);
+        std::cout << std::left << std::setw(12) << best_result->prob_vector << std::endl;
     }
 
 private:
