@@ -1,5 +1,6 @@
 #include "Simulator.hpp"
 #include "markovChain.hpp"
+#include "costAnalyzer.hpp"
 
 
 int main(int argc, char* argv[])
@@ -10,6 +11,9 @@ int main(int argc, char* argv[])
     PWEquipementRefineSimulator simulator;
     // simulator.run();
 
-    eigenTest();
+    // printMarkovChainProbabilities();
+    RefineCostAnalyzer costAnalyzer(10000, 570000);
+    double money = atof(argv[1]);
+    costAnalyzer.analyzeCost(money, 5);
     return 0;
 }
