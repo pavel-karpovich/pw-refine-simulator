@@ -36,44 +36,66 @@ public:
             {"nebeska", mirazh_cost + stone_cost, nebeska_matrix()},
             {"podzemka", mirazh_cost + stone_cost, podzemka_matrix()},
             {"mirozdanka", mirazh_cost + stone_cost, mirozdanka_matrix()}
-        }) {}
+        }) {
+            std::cout << stone_cost;
+        }
 
     
-    void analyzeCost(double money, uint target_refine)
+    void analyzeCost(uint target_refine, double money)
     {
         
         RefineVector initial_prob_state;
         initial_prob_state << 1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
-        for (auto step_option : this->step_options)
+        for (Step& step_option : this->step_options)
         {
             step_option.prob_matrix.row(target_refine) *= 0;
             step_option.prob_matrix(target_refine, target_refine) = 1.0;
         }
+        std::cout << this->step_options[0].prob_matrix << std::endl << std::endl;
+        std::cout << "Analyze best way to rifine +" << target_refine << " with money: " << money << std::endl;
         const Result* best_result = this->makeStepFurther(money, target_refine, initial_prob_state, 1, "");
         std::cout << "Best path to refine +" << target_refine << " is found:" << std::endl;
         std::cout << best_result->path << std::endl;
         printVector(refine_levels);
         std::cout << std::left << std::setw(12) << best_result->prob_vector << std::endl;
+        delete best_result;
     }
 
 private:
-    const Result* makeStepFurther(double money_left, uint target_refine, RefineVector prob_state, uint depth, std::string path_str)
+    Result* makeStepFurther(double money_left, uint target_refine, RefineVector prob_state, uint depth, std::string path_str)
     {
-        if (money_left < 0)
+        Result* best_result = nullptr;
+        bool current_step_was_checked = false;
+        for (Step& step_option : this->step_options)
         {
-            return new Result(path_str, prob_state);
-        }
-        const Result* best_result = nullptr;
-        for (auto step_option : this->step_options)
-        {
-            RefineVector step_prob_state = prob_state * step_option.prob_matrix;
-            const Result* next_result = makeStepFurther(money_left - step_option.cost, target_refine, step_prob_state, depth + 1, path_str + " " + std::to_string(depth) + ")" + step_option.name);
-            if (best_result == nullptr || next_result->prob_vector[target_refine] > best_result->prob_vector[target_refine])
+            Result* next_result = nullptr;
+            if (money_left - step_option.cost < 0)
             {
-                delete best_result;
+                if (!current_step_was_checked)
+                {
+                    current_step_was_checked = true;
+                    next_result = new Result(path_str, prob_state);
+                }
+            }
+            else
+            {
+                RefineVector step_prob_state = prob_state * step_option.prob_matrix;
+                next_result = makeStepFurther(money_left - step_option.cost, target_refine, step_prob_state, depth + 1, path_str + " " + std::to_string(depth) + ")" + step_option.name);
+            }
+            if (next_result != nullptr)
+            {
+                std::cout << " Found result: " << next_result->prob_vector[target_refine] << " path: " << next_result->path << std::endl;
+                std::cout << " Probability vector: " << next_result->prob_vector << std::endl << std::endl;
+            }
+            if (best_result == nullptr || (next_result != nullptr && next_result->prob_vector[target_refine] > best_result->prob_vector[target_refine]))
+            {
+                if (best_result != nullptr)
+                {
+                    delete best_result;
+                }
                 best_result = next_result;
             }
-            else 
+            else if (next_result != nullptr)
             {
                 delete next_result;
             }

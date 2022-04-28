@@ -18,6 +18,6 @@ int main(int argc, char* argv[])
     RefineCostAnalyzer costAnalyzer(10000, 570000);
     uint level = atoi(argv[1]);
     double money = atof(argv[2]);
-    costAnalyzer.analyzeCost(money, level);
+    costAnalyzer.analyzeCost(level, money);
     return 0;
 }
