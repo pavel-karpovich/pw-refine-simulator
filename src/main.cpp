@@ -1,11 +1,13 @@
 #include "Simulator.hpp"
 #include "markovChain.hpp"
 #include "costAnalyzer.hpp"
+#include "executionTimer.hpp"
 
 
 int main(int argc, char* argv[])
 {
     std::cout << "Start PW Refine simulator " << argc << std::endl;
+    ExecutionTimer execTimer(std::cout);
     
     //PWEquipementRefineSimulator simulator;
     // simulator.run();

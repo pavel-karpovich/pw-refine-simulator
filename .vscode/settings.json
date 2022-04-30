@@ -75,7 +75,8 @@
         "mutex": "cpp",
         "thread": "cpp",
         "cinttypes": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "bit": "cpp"
     },
     "C_Cpp.errorSquiggles": "EnabledIfIncludesResolve"
 }
