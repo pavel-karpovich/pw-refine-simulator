@@ -83,7 +83,7 @@ public:
 
     void analyzeUltimate()
     {
-        const double precision = 0.2;
+        const double precision = 0.001;
         const double required_probability = 1.0 - precision;
 
         const size_t levels = this->step_options[0].prob_matrix.rows() - 1;
@@ -119,7 +119,7 @@ public:
                     {
                         break;
                     }
-                    if (curr_refine_level != 0)
+                    if (curr_refine_level != failure_refine_level)
                     {
                         cost += results[curr_refine_level - 1].cost;
                         if (failure_refine_level != 0)
