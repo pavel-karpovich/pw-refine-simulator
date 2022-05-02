@@ -15,11 +15,11 @@ class Item
 public:
     unsigned int	id;		
     std::string     name;
-    float           price;
-    unsigned int    max_pile = 1;
+    ulong           price;
+    uint            max_pile = 1;
 
     Item() {}
-    Item(unsigned int id, std::string name, float price, unsigned int max_pile)
+    Item(unsigned int id, std::string name, ulong price, uint max_pile)
         : id(id), name(name), price(price), max_pile(max_pile) {}
 
     virtual std::string toString() const {
@@ -97,12 +97,12 @@ public:
 class EquipementItem : public Item
 {
 public:
-    unsigned int refine_level = 0;
+    uint refine_level = 0;
 
 private:
     EquipementItem() : Item() {}
 public:
-    EquipementItem(unsigned int id, std::string name)
+    EquipementItem(uint id, std::string name)
         : Item(id, name, 0, 1) {}
 
     virtual std::string toString() const override

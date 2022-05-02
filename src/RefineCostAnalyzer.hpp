@@ -9,7 +9,7 @@
 struct Step
 {
     std::string name;
-    double cost;
+    ulong cost;
     StoneMatrix prob_matrix;
 };
 
@@ -23,6 +23,26 @@ public:
         : path(path), prob_vector(prob_vector) {}
 };
 
+struct RefineLevelResult
+{
+    std::string name = "";
+    ulong cost = 0;
+};
+
+
+void prettyFormatNumber(std::stringstream& ss, ulong n) {
+    if (n < 1000)
+    {
+        ss << n;
+    }
+    else
+    {
+        prettyFormatNumber(ss, n / 1000);
+        ss << " " << std::setw(3) << std::setfill('0') << (n % 1000);
+    }
+}
+
+
 class RefineCostAnalyzer
 {
 private:
@@ -30,7 +50,7 @@ private:
     std::vector<Result> results;
 
 public:
-    RefineCostAnalyzer(double mirazh_cost, double stone_cost)
+    RefineCostAnalyzer(ulong mirazh_cost, ulong stone_cost)
         : step_options({
             {"mirazh", mirazh_cost, mirazh_matrix()},
             {"nebeska", mirazh_cost + stone_cost, nebeska_matrix()},
@@ -41,7 +61,7 @@ public:
         }
 
     
-    void analyzeCost(uint target_refine, double money)
+    void analyzeCost(uint target_refine, ulong money)
     {
         
         RefineVector initial_prob_state;
@@ -61,15 +81,79 @@ public:
         delete best_result;
     }
 
+    void analyzeUltimate()
+    {
+        const double precision = 0.2;
+        const double required_probability = 1.0 - precision;
+
+        const size_t levels = this->step_options[0].prob_matrix.rows() - 1;
+        RefineLevelResult results[levels];
+
+        for (size_t curr_refine_level = 0; curr_refine_level < levels; ++curr_refine_level)
+        {
+            for (auto step_option : this->step_options)
+            {
+                size_t failure_refine_level = 0;
+                double failure_probability = 0.0;
+                auto refine_row = step_option.prob_matrix.row(curr_refine_level);
+                for (size_t i = 0; i < static_cast<size_t>(refine_row.size()); ++i)
+                {
+                    double i_value = refine_row.coeff(i);
+                    if (i_value != 0)
+                    {
+                        failure_refine_level = i;
+                        failure_probability = i_value;
+                        break;
+                    }
+                }
+                double success_probability = refine_row.coeff(curr_refine_level + 1);
+                
+                ulong cost = curr_refine_level == 0 ? 0 : results[curr_refine_level - 1].cost;
+                double success_prob_total = success_probability;
+                double failure_prob_left = failure_probability;
+                cost += step_option.cost;
+                
+                while (success_prob_total < required_probability)
+                {
+                    if (results[curr_refine_level].cost != 0 && cost >= results[curr_refine_level].cost)
+                    {
+                        break;
+                    }
+                    if (curr_refine_level != 0)
+                    {
+                        cost += results[curr_refine_level - 1].cost;
+                        if (failure_refine_level != 0)
+                        {
+                            cost -= results[failure_refine_level - 1].cost;
+                        }
+                    }
+                    success_prob_total += failure_prob_left * success_probability;
+                    failure_prob_left *= failure_probability;
+                    cost += step_option.cost;
+                }
+                if (cost < results[curr_refine_level].cost || results[curr_refine_level].cost == 0)
+                {
+                    results[curr_refine_level].cost = cost;
+                    results[curr_refine_level].name = step_option.name;
+                }
+            }
+            std::stringstream ss;
+            prettyFormatNumber(ss, results[curr_refine_level].cost);
+            std::string pretty_cost = ss.str();
+            std::cout << "  The best way to refine +" << curr_refine_level + 1 << " from +" << curr_refine_level <<" is using \"" << results[curr_refine_level].name << "\"." << std::endl
+                << "    The total price is " << std::fixed << std::setprecision(0) << pretty_cost << std::endl;
+        }
+    }
+
 private:
-    Result* makeStepFurther(double money_left, uint target_refine, RefineVector prob_state, uint depth, std::string path_str)
+    Result* makeStepFurther(ulong money_left, uint target_refine, RefineVector prob_state, uint depth, std::string path_str)
     {
         Result* best_result = nullptr;
         bool current_step_was_checked = false;
         for (Step& step_option : this->step_options)
         {
             Result* next_result = nullptr;
-            if (money_left - step_option.cost < 0)
+            if (step_option.cost > money_left)
             {
                 if (!current_step_was_checked)
                 {
@@ -103,4 +187,3 @@ private:
         return best_result;
     }
 };
-

@@ -92,7 +92,7 @@ public:
 class Inventory
 {
 private:
-    float spent_gold = 0.0;
+    ulong spent_gold = 0;
     Slot slots[64];
     
 public:
