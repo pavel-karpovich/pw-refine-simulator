@@ -3,7 +3,7 @@ TARGET_EXEC := exe
 BUILD_DIR := ./build
 SRC_DIRS := ./src
 
-CXXFLAGS += -lstdc++ -msse2 -Wall -Werror -Wextra -std=c++17
+CXXFLAGS += -g -lstdc++ -msse2 -Wall -Werror -Wextra -std=c++17
 CC := g++
 
 EIGEN := -I ./lib/eigen-3.4.0/
